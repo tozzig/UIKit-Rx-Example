@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct MovieListItem: Decodable {
+struct MovieListItem: Decodable, Equatable {
     let posterPath: String?
     let releaseDate: String
     let originalTitle: String

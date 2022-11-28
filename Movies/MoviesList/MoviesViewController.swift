@@ -30,6 +30,7 @@ class MoviesViewController: UIViewController {
         super.viewDidLoad()
         tableView.register(R.nib.movieListCell)
         tableView.register(R.nib.noResultsCell)
+        tableView.register(R.nib.loadingCell)
         tableView.tableFooterView = UIView()
         setupBindings()
     }
@@ -51,6 +52,8 @@ class MoviesViewController: UIViewController {
                         withIdentifier: R.reuseIdentifier.noResultsCell,
                         for: indexPath
                      )
+                 case .loading:
+                     cell = tableView.dequeueReusableCell(withIdentifier: R.reuseIdentifier.loadingCell, for: indexPath)
                  }
                  return cell ?? UITableViewCell()
             }
@@ -58,7 +61,9 @@ class MoviesViewController: UIViewController {
         disposeBag.insert(
             tableView.rx.modelSelected(MoviesListCellType.self).bind(to: viewModel.input.selectedItem),
             viewModel.output.title.drive(rx.title),
-            viewModel.output.sections.drive(tableView.rx.items(dataSource: eventsDataSource))
+            viewModel.output.sections.drive(tableView.rx.items(dataSource: eventsDataSource)),
+//            tableView.rx.rea
+            tableView.rx.prefetchRows.bind(to: viewModel.input.prefetchRows)
         )
     }
 }

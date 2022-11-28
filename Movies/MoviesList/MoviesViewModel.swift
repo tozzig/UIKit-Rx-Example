@@ -22,6 +22,41 @@ class MoviesViewModel {
     init(moviesService: MoviesService, imageUrlBuilder: ImageUrlBuilder) {
         self.moviesService = moviesService
         self.imageUrlBuilder = imageUrlBuilder
+        let loadNextItemTrigger = PublishSubject<Void>()
+
+        let initialResponse = moviesService.moviesList()
+            .compactMap(\.value)
+
+        let initialItems = initialResponse.compactMap(\.results)
+        let pagesCount = initialResponse.map { $0.totalPages ?? 1 }
+
+        let page = loadNextItemTrigger.withLatestFrom(pagesCount)
+            .scan(1) { pageNumber, pagesCount -> Int? in
+                guard let pageNumber, pagesCount > pageNumber else {
+                    return nil
+                }
+                return pageNumber + 1
+            }
+            .startWith(1)
+
+        let morePages = page.compactMap { $0 }
+            .flatMap { moviesService.moviesList(page: $0).compactMap(\.value?.results) }
+            .scan([], accumulator: +)
+
+        let sectionItems = morePages//Observable.combineLatest(initialItems.startWith([]), morePages) { $0 + $1 }
+            .map { items -> [MoviesListCellType] in
+                return items.isEmpty ? [.noResults] : items.map { MoviesListCellType.movie($0) }
+            }
+            .withLatestFrom(page) { ($0, $1) }
+            .map { cells, page in
+                var sections = [Section(items: cells)]
+                if page != nil {
+                    sections.append(Section(items: [.loading]))
+                }
+                return sections
+            }
+            .asDriverOnErrorJustComplete()
+
         let sections = moviesService.moviesList()
             .map { response in
                 return [Section(items: response.value?.results?.map { .movie($0) } ?? [.noResults])]
@@ -30,24 +65,34 @@ class MoviesViewModel {
         let selectedModelSubject = PublishSubject<MoviesListCellType>()
         let selectedMovieId = selectedModelSubject.compactMap { item -> Int? in
             switch item {
-            case .noResults:
+            case .noResults, .loading:
                 return nil
             case .movie(let movie):
                 return movie.id
             }
         }
 
-        let loadNextItemTrigger = PublishSubject<Void>()
+        let prefetchRows = PublishSubject<[IndexPath]>()
 
-//        let x = Observable.of(1, 2, 3)
-//        Observable.scan(<#T##self: Observable<_>##Observable<_>#>)
+        prefetchRows
+            .withLatestFrom(sectionItems) { ($0, $1) }
+            .filter { indexPaths, sections in
+                guard let lastSectionIndex = sections.lastIndex(where: { $0.items.contains(.loading) }) else {
+                    return false
+                }
+                return indexPaths.map(\.section).contains(lastSectionIndex)
+            }
+            .map { _ in () }
+            .bind(to: loadNextItemTrigger)
+            .disposed(by: bag)
+
         input = Input(
             selectedItem: selectedModelSubject.asObserver(),
-            shouldLoadNextItem: loadNextItemTrigger.asObserver()
+            prefetchRows: prefetchRows.asObserver()
         )
         output = Output(
             title: .just("Movies"),
-            sections: sections,
+            sections: sectionItems,
             selectedMovieId: selectedMovieId
         )
     }
@@ -60,15 +105,16 @@ extension MoviesViewModel {
     }
 }
 
-enum MoviesListCellType {
+enum MoviesListCellType: Equatable {
     case movie(MovieListItem)
     case noResults
+    case loading
 }
 
 extension MoviesViewModel {
     struct Input {
         let selectedItem: AnyObserver<MoviesListCellType>
-        let shouldLoadNextItem: AnyObserver<Void>
+        let prefetchRows: AnyObserver<[IndexPath]>
     }
 
     struct Output {

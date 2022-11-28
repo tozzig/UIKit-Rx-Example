@@ -130,8 +130,10 @@ struct R: Rswift.Validatable {
     fileprivate init() {}
   }
 
-  /// This `R.nib` struct is generated, and contains static references to 5 nibs.
+  /// This `R.nib` struct is generated, and contains static references to 6 nibs.
   struct nib {
+    /// Nib `LoadingCell`.
+    static let loadingCell = _R.nib._LoadingCell()
     /// Nib `LoadingViewController`.
     static let loadingViewController = _R.nib._LoadingViewController()
     /// Nib `MovieDetailViewController`.
@@ -142,6 +144,14 @@ struct R: Rswift.Validatable {
     static let moviesViewController = _R.nib._MoviesViewController()
     /// Nib `NoResultsCell`.
     static let noResultsCell = _R.nib._NoResultsCell()
+
+    #if os(iOS) || os(tvOS)
+    /// `UINib(name: "LoadingCell", in: bundle)`
+    @available(*, deprecated, message: "Use UINib(resource: R.nib.loadingCell) instead")
+    static func loadingCell(_: Void = ()) -> UIKit.UINib {
+      return UIKit.UINib(resource: R.nib.loadingCell)
+    }
+    #endif
 
     #if os(iOS) || os(tvOS)
     /// `UINib(name: "LoadingViewController", in: bundle)`
@@ -183,6 +193,10 @@ struct R: Rswift.Validatable {
     }
     #endif
 
+    static func loadingCell(owner ownerOrNil: AnyObject?, options optionsOrNil: [UINib.OptionsKey : Any]? = nil) -> LoadingCell? {
+      return R.nib.loadingCell.instantiate(withOwner: ownerOrNil, options: optionsOrNil)[0] as? LoadingCell
+    }
+
     static func loadingViewController(owner ownerOrNil: AnyObject?, options optionsOrNil: [UINib.OptionsKey : Any]? = nil) -> UIKit.UIView? {
       return R.nib.loadingViewController.instantiate(withOwner: ownerOrNil, options: optionsOrNil)[0] as? UIKit.UIView
     }
@@ -206,8 +220,10 @@ struct R: Rswift.Validatable {
     fileprivate init() {}
   }
 
-  /// This `R.reuseIdentifier` struct is generated, and contains static references to 2 reuse identifiers.
+  /// This `R.reuseIdentifier` struct is generated, and contains static references to 3 reuse identifiers.
   struct reuseIdentifier {
+    /// Reuse identifier `LoadingCell`.
+    static let loadingCell: Rswift.ReuseIdentifier<LoadingCell> = Rswift.ReuseIdentifier(identifier: "LoadingCell")
     /// Reuse identifier `MovieListCell`.
     static let movieListCell: Rswift.ReuseIdentifier<MovieListCell> = Rswift.ReuseIdentifier(identifier: "MovieListCell")
     /// Reuse identifier `NoResultsCell`.
@@ -238,6 +254,20 @@ struct _R: Rswift.Validatable {
 
   #if os(iOS) || os(tvOS)
   struct nib {
+    struct _LoadingCell: Rswift.NibResourceType, Rswift.ReuseIdentifierType {
+      typealias ReusableType = LoadingCell
+
+      let bundle = R.hostingBundle
+      let identifier = "LoadingCell"
+      let name = "LoadingCell"
+
+      func firstView(owner ownerOrNil: AnyObject?, options optionsOrNil: [UINib.OptionsKey : Any]? = nil) -> LoadingCell? {
+        return instantiate(withOwner: ownerOrNil, options: optionsOrNil)[0] as? LoadingCell
+      }
+
+      fileprivate init() {}
+    }
+
     struct _LoadingViewController: Rswift.NibResourceType {
       let bundle = R.hostingBundle
       let name = "LoadingViewController"
