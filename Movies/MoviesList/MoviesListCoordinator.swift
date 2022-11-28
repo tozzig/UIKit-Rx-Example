@@ -10,32 +10,54 @@ import RxSwift
 class MoviesListCoordinator: BaseCoordinator<Void> {
 
     private let window: UIWindow
+    private let configuration: Configuration
 
-    init(window: UIWindow) {
+    init(window: UIWindow, configuration: Configuration) {
         self.window = window
+        self.configuration = configuration
         super.init()
     }
 
-    override func start(nextScene: Scene?, params: [String : Any]?, animation: Bool = true) -> Observable<Void> {
+    override func start(nextScene: Scene?, params: [String: Any]?, animated: Bool) -> Observable<Void> {
+        guard let imageUrlBuilder = ImageUrlBuilder(configuration: configuration) else {
+            return .never()
+        }
 
-        let view = R.storyboard.main.moviesList()!
+        let moviesService = MoviesService()
+        let viewModel = MoviesViewModel(moviesService: moviesService, imageUrlBuilder: imageUrlBuilder)
+        let view = MoviesViewController(viewModel: viewModel)
         let navigationController = UINavigationController(rootViewController: view)
-        navigationController.navigationBar.prefersLargeTitles = true
-
-//        view.viewModel.output.selectedCity
-//            .subscribe(onNext: { [weak self] cityName in
-//                self?.startWeatherDetail(in: navigationController, with: cityName)
-//            }).disposed(by: disposeBag)
-
         window.rootViewController = navigationController
-        window.makeKeyAndVisible()
+
+        viewModel.output.selectedMovieId
+            .asDriverOnErrorJustComplete()
+            .drive(onNext: { [unowned self] id  in
+                startMovieDetail(
+                    in: navigationController,
+                    movieId: id,
+                    moviesService: moviesService,
+                    imageUrlBuilder: imageUrlBuilder
+                )
+            })
+            .disposed(by: disposeBag)
+
         return .never()
     }
 
-    private func startWeatherDetail(in navigationController: UINavigationController, with cityName: String) {
-//        coordinate(
-//            to: WeatherDetailCoordinator(navigationController: navigationController),
-//            params: ["cityName": cityName]
-//        ).subscribe().disposed(by: disposeBag)
+    private func startMovieDetail(
+        in navigationController: UINavigationController,
+        movieId: Int,
+        moviesService: MoviesService,
+        imageUrlBuilder: ImageUrlBuilder
+    ) {
+        let movieDetailCoordinator = MovieDetailCoordinator(
+            navigationController: navigationController,
+            movieId: movieId,
+            moviesService: moviesService,
+            imageUrlBuilder: imageUrlBuilder
+        )
+        coordinate(to: movieDetailCoordinator)
+            .subscribe()
+            .disposed(by: disposeBag)
     }
 }

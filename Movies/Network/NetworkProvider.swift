@@ -24,7 +24,7 @@ final class NetworkProvider {
     
     private init() { }
     
-    func request(request: RequestProtocol, statusCodes: Range<Int> = 200..<403) -> DataRequest {
+    func request(request: RequestProtocol) -> DataRequest {
         session
             .request(
                 request.baseURL.appendingPathComponent(request.path),
@@ -33,6 +33,5 @@ final class NetworkProvider {
                 encoding: request.paramsEncoding,
                 headers: request.headers
             )
-//            .validate(statusCode: statusCodes)
     }
 }

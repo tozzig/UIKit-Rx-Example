@@ -89,24 +89,15 @@ struct R: Rswift.Validatable {
   }
 
   #if os(iOS) || os(tvOS)
-  /// This `R.storyboard` struct is generated, and contains static references to 2 storyboards.
+  /// This `R.storyboard` struct is generated, and contains static references to 1 storyboards.
   struct storyboard {
     /// Storyboard `LaunchScreen`.
     static let launchScreen = _R.storyboard.launchScreen()
-    /// Storyboard `Main`.
-    static let main = _R.storyboard.main()
 
     #if os(iOS) || os(tvOS)
     /// `UIStoryboard(name: "LaunchScreen", bundle: ...)`
     static func launchScreen(_: Void = ()) -> UIKit.UIStoryboard {
       return UIKit.UIStoryboard(resource: R.storyboard.launchScreen)
-    }
-    #endif
-
-    #if os(iOS) || os(tvOS)
-    /// `UIStoryboard(name: "Main", bundle: ...)`
-    static func main(_: Void = ()) -> UIKit.UIStoryboard {
-      return UIKit.UIStoryboard(resource: R.storyboard.main)
     }
     #endif
 
@@ -135,6 +126,82 @@ struct R: Rswift.Validatable {
       return UIKit.UIColor(named: R.color.accentColor.name)
     }
     #endif
+
+    fileprivate init() {}
+  }
+
+  /// This `R.nib` struct is generated, and contains static references to 5 nibs.
+  struct nib {
+    /// Nib `LoadingViewController`.
+    static let loadingViewController = _R.nib._LoadingViewController()
+    /// Nib `MovieDetailViewController`.
+    static let movieDetailViewController = _R.nib._MovieDetailViewController()
+    /// Nib `MovieListCell`.
+    static let movieListCell = _R.nib._MovieListCell()
+    /// Nib `MoviesViewController`.
+    static let moviesViewController = _R.nib._MoviesViewController()
+    /// Nib `NoResultsCell`.
+    static let noResultsCell = _R.nib._NoResultsCell()
+
+    #if os(iOS) || os(tvOS)
+    /// `UINib(name: "LoadingViewController", in: bundle)`
+    @available(*, deprecated, message: "Use UINib(resource: R.nib.loadingViewController) instead")
+    static func loadingViewController(_: Void = ()) -> UIKit.UINib {
+      return UIKit.UINib(resource: R.nib.loadingViewController)
+    }
+    #endif
+
+    #if os(iOS) || os(tvOS)
+    /// `UINib(name: "MovieDetailViewController", in: bundle)`
+    @available(*, deprecated, message: "Use UINib(resource: R.nib.movieDetailViewController) instead")
+    static func movieDetailViewController(_: Void = ()) -> UIKit.UINib {
+      return UIKit.UINib(resource: R.nib.movieDetailViewController)
+    }
+    #endif
+
+    #if os(iOS) || os(tvOS)
+    /// `UINib(name: "MovieListCell", in: bundle)`
+    @available(*, deprecated, message: "Use UINib(resource: R.nib.movieListCell) instead")
+    static func movieListCell(_: Void = ()) -> UIKit.UINib {
+      return UIKit.UINib(resource: R.nib.movieListCell)
+    }
+    #endif
+
+    #if os(iOS) || os(tvOS)
+    /// `UINib(name: "MoviesViewController", in: bundle)`
+    @available(*, deprecated, message: "Use UINib(resource: R.nib.moviesViewController) instead")
+    static func moviesViewController(_: Void = ()) -> UIKit.UINib {
+      return UIKit.UINib(resource: R.nib.moviesViewController)
+    }
+    #endif
+
+    #if os(iOS) || os(tvOS)
+    /// `UINib(name: "NoResultsCell", in: bundle)`
+    @available(*, deprecated, message: "Use UINib(resource: R.nib.noResultsCell) instead")
+    static func noResultsCell(_: Void = ()) -> UIKit.UINib {
+      return UIKit.UINib(resource: R.nib.noResultsCell)
+    }
+    #endif
+
+    static func loadingViewController(owner ownerOrNil: AnyObject?, options optionsOrNil: [UINib.OptionsKey : Any]? = nil) -> UIKit.UIView? {
+      return R.nib.loadingViewController.instantiate(withOwner: ownerOrNil, options: optionsOrNil)[0] as? UIKit.UIView
+    }
+
+    static func movieDetailViewController(owner ownerOrNil: AnyObject?, options optionsOrNil: [UINib.OptionsKey : Any]? = nil) -> UIKit.UIView? {
+      return R.nib.movieDetailViewController.instantiate(withOwner: ownerOrNil, options: optionsOrNil)[0] as? UIKit.UIView
+    }
+
+    static func movieListCell(owner ownerOrNil: AnyObject?, options optionsOrNil: [UINib.OptionsKey : Any]? = nil) -> MovieListCell? {
+      return R.nib.movieListCell.instantiate(withOwner: ownerOrNil, options: optionsOrNil)[0] as? MovieListCell
+    }
+
+    static func moviesViewController(owner ownerOrNil: AnyObject?, options optionsOrNil: [UINib.OptionsKey : Any]? = nil) -> UIKit.UIView? {
+      return R.nib.moviesViewController.instantiate(withOwner: ownerOrNil, options: optionsOrNil)[0] as? UIKit.UIView
+    }
+
+    static func noResultsCell(owner ownerOrNil: AnyObject?, options optionsOrNil: [UINib.OptionsKey : Any]? = nil) -> NoResultsCell? {
+      return R.nib.noResultsCell.instantiate(withOwner: ownerOrNil, options: optionsOrNil)[0] as? NoResultsCell
+    }
 
     fileprivate init() {}
   }
@@ -170,13 +237,77 @@ struct _R: Rswift.Validatable {
   }
 
   #if os(iOS) || os(tvOS)
+  struct nib {
+    struct _LoadingViewController: Rswift.NibResourceType {
+      let bundle = R.hostingBundle
+      let name = "LoadingViewController"
+
+      func firstView(owner ownerOrNil: AnyObject?, options optionsOrNil: [UINib.OptionsKey : Any]? = nil) -> UIKit.UIView? {
+        return instantiate(withOwner: ownerOrNil, options: optionsOrNil)[0] as? UIKit.UIView
+      }
+
+      fileprivate init() {}
+    }
+
+    struct _MovieDetailViewController: Rswift.NibResourceType {
+      let bundle = R.hostingBundle
+      let name = "MovieDetailViewController"
+
+      func firstView(owner ownerOrNil: AnyObject?, options optionsOrNil: [UINib.OptionsKey : Any]? = nil) -> UIKit.UIView? {
+        return instantiate(withOwner: ownerOrNil, options: optionsOrNil)[0] as? UIKit.UIView
+      }
+
+      fileprivate init() {}
+    }
+
+    struct _MovieListCell: Rswift.NibResourceType, Rswift.ReuseIdentifierType {
+      typealias ReusableType = MovieListCell
+
+      let bundle = R.hostingBundle
+      let identifier = "MovieListCell"
+      let name = "MovieListCell"
+
+      func firstView(owner ownerOrNil: AnyObject?, options optionsOrNil: [UINib.OptionsKey : Any]? = nil) -> MovieListCell? {
+        return instantiate(withOwner: ownerOrNil, options: optionsOrNil)[0] as? MovieListCell
+      }
+
+      fileprivate init() {}
+    }
+
+    struct _MoviesViewController: Rswift.NibResourceType {
+      let bundle = R.hostingBundle
+      let name = "MoviesViewController"
+
+      func firstView(owner ownerOrNil: AnyObject?, options optionsOrNil: [UINib.OptionsKey : Any]? = nil) -> UIKit.UIView? {
+        return instantiate(withOwner: ownerOrNil, options: optionsOrNil)[0] as? UIKit.UIView
+      }
+
+      fileprivate init() {}
+    }
+
+    struct _NoResultsCell: Rswift.NibResourceType, Rswift.ReuseIdentifierType {
+      typealias ReusableType = NoResultsCell
+
+      let bundle = R.hostingBundle
+      let identifier = "NoResultsCell"
+      let name = "NoResultsCell"
+
+      func firstView(owner ownerOrNil: AnyObject?, options optionsOrNil: [UINib.OptionsKey : Any]? = nil) -> NoResultsCell? {
+        return instantiate(withOwner: ownerOrNil, options: optionsOrNil)[0] as? NoResultsCell
+      }
+
+      fileprivate init() {}
+    }
+
+    fileprivate init() {}
+  }
+  #endif
+
+  #if os(iOS) || os(tvOS)
   struct storyboard: Rswift.Validatable {
     static func validate() throws {
       #if os(iOS) || os(tvOS)
       try launchScreen.validate()
-      #endif
-      #if os(iOS) || os(tvOS)
-      try main.validate()
       #endif
     }
 
@@ -190,28 +321,6 @@ struct _R: Rswift.Validatable {
       static func validate() throws {
         if #available(iOS 11.0, tvOS 11.0, *) {
         }
-      }
-
-      fileprivate init() {}
-    }
-    #endif
-
-    #if os(iOS) || os(tvOS)
-    struct main: Rswift.StoryboardResourceWithInitialControllerType, Rswift.Validatable {
-      typealias InitialController = MoviesViewController
-
-      let bundle = R.hostingBundle
-      let moviesList = StoryboardViewControllerResource<MoviesViewController>(identifier: "movies-list")
-      let name = "Main"
-
-      func moviesList(_: Void = ()) -> MoviesViewController? {
-        return UIKit.UIStoryboard(resource: self).instantiateViewController(withResource: moviesList)
-      }
-
-      static func validate() throws {
-        if #available(iOS 11.0, tvOS 11.0, *) {
-        }
-        if _R.storyboard.main().moviesList() == nil { throw Rswift.ValidationError(description:"[R.swift] ViewController with identifier 'moviesList' could not be loaded from storyboard 'Main' as 'MoviesViewController'.") }
       }
 
       fileprivate init() {}

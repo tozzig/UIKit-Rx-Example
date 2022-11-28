@@ -12,8 +12,8 @@ import RxSwift
 extension NetworkProvider: ReactiveCompatible {}
 
 extension Reactive where Base: NetworkProvider {
-    func requestBase<T>(request: RequestProtocol, statusCodes: Range<Int> = 200..<400, transform: @escaping (Data) throws -> T) -> Observable<NetworkResponse<T>> {
-        let response: Observable<Data> = base.request(request: request, statusCodes: statusCodes).rx.data()
+    func requestBase<T>(request: RequestProtocol, transform: @escaping (Data) throws -> T) -> Observable<NetworkResponse<T>> {
+        let response: Observable<Data> = base.request(request: request).rx.data()
         return response
             .map { data -> NetworkResponse<T> in
                 do {
@@ -37,6 +37,10 @@ extension Reactive where Base: NetworkProvider {
             return try decoder.decode(T.self, from: $0)
         })
     }
+
+//    func xx(request: RequestProtocol) {
+//        base.session.rx.responseDecodable(<#T##method: HTTPMethod##HTTPMethod#>, <#T##url: URLConvertible##URLConvertible#>)
+//    }
 }
 
 class Scheduler {

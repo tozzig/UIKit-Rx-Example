@@ -8,5 +8,6 @@
 import Foundation
 
 struct MoviesListResponse: Decodable {
-    let results: [MovieListItem]
+    let results: [MovieListItem]?
+    let totalPages: Int?
 }

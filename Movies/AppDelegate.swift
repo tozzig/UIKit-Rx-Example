@@ -21,7 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         let window = UIWindow()
         self.window = window
-        appCoordinator = AppCoordinator(window: window)
+        appCoordinator = AppCoordinator(window: window, configurationService: ConfigurationService())
         
         goToScene(.moviesList)
         return true
@@ -29,8 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func goToScene(_ scene: Scene, params: [String: AnyObject]? = nil) {
         disposeBag = DisposeBag()
-        appCoordinator = AppCoordinator(window: window!)
-        appCoordinator.start(nextScene: .moviesList, params: params)
+        appCoordinator.start(nextScene: .moviesList, params: params, animated: false)
             .subscribe()
             .disposed(by: disposeBag)
     }

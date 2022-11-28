@@ -11,8 +11,8 @@ enum MoviesAPI {
     private var key: String {
         "c9856d0cb57c3f14bf75bdc6c063b8f3"
     }
-    
-    case moviesList
+
+    case moviesList(Int)
     case movieDetail(Int)
 }
 
@@ -31,12 +31,20 @@ extension MoviesAPI: RequestProtocol {
     }
 
     var parameters: Parameters? {
-        [ParametersKeys.apiKey.rawValue: key]
+        var parameters = [ParametersKeys.apiKey.rawValue: key]
+        switch self {
+        case .moviesList(let page):
+            parameters[ParametersKeys.page.rawValue] = String(page)
+        case .movieDetail:
+            break
+        }
+        return parameters
     }
 }
 
 private extension MoviesAPI {
     enum ParametersKeys: String {
         case apiKey = "api_key"
+        case page
     }
 }

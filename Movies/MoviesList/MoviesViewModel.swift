@@ -16,11 +16,15 @@ class MoviesViewModel {
 
     private let bag = DisposeBag()
 
-    init() {
-        let service = MoviesService()
-        let sections = service.moviesList()
+    private let moviesService: MoviesService
+    private let imageUrlBuilder: ImageUrlBuilder
+
+    init(moviesService: MoviesService, imageUrlBuilder: ImageUrlBuilder) {
+        self.moviesService = moviesService
+        self.imageUrlBuilder = imageUrlBuilder
+        let sections = moviesService.moviesList()
             .map { response in
-                return [Section(items: response.value?.results.map { .movie($0) } ?? [.noResults])]
+                return [Section(items: response.value?.results?.map { .movie($0) } ?? [.noResults])]
             }
             .asDriverOnErrorJustComplete()
         let selectedModelSubject = PublishSubject<MoviesListCellType>()
@@ -32,8 +36,14 @@ class MoviesViewModel {
                 return movie.id
             }
         }
+
+        let loadNextItemTrigger = PublishSubject<Void>()
+
+//        let x = Observable.of(1, 2, 3)
+//        Observable.scan(<#T##self: Observable<_>##Observable<_>#>)
         input = Input(
-            selectedItem: selectedModelSubject.asObserver()
+            selectedItem: selectedModelSubject.asObserver(),
+            shouldLoadNextItem: loadNextItemTrigger.asObserver()
         )
         output = Output(
             title: .just("Movies"),
@@ -44,6 +54,12 @@ class MoviesViewModel {
 
 }
 
+extension MoviesViewModel {
+    func movieCellViewModel(for item: MovieListItem) -> MovieListCellViewModel {
+        .init(movieListItem: item, moviesService: moviesService, imageUrlBuilder: imageUrlBuilder)
+    }
+}
+
 enum MoviesListCellType {
     case movie(MovieListItem)
     case noResults
@@ -52,6 +68,7 @@ enum MoviesListCellType {
 extension MoviesViewModel {
     struct Input {
         let selectedItem: AnyObserver<MoviesListCellType>
+        let shouldLoadNextItem: AnyObserver<Void>
     }
 
     struct Output {
