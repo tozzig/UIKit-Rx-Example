@@ -8,7 +8,6 @@
 import RxSwift
 
 class MoviesListCoordinator: BaseCoordinator<Void> {
-
     private let window: UIWindow
     private let configuration: Configuration
 
@@ -31,14 +30,14 @@ class MoviesListCoordinator: BaseCoordinator<Void> {
 
         viewModel.output.selectedMovieId
             .asDriverOnErrorJustComplete()
-            .drive(onNext: { [unowned self] id  in
+            .drive { [unowned self] id in
                 startMovieDetail(
                     in: navigationController,
                     movieId: id,
                     moviesService: moviesService,
                     imageUrlBuilder: imageUrlBuilder
                 )
-            })
+            }
             .disposed(by: disposeBag)
 
         return .never()

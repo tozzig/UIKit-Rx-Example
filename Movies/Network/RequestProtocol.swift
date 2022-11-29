@@ -25,19 +25,19 @@ extension RequestProtocol {
     var path: String {
         ""
     }
-    
+
     var method: HTTPMethod {
         .get
     }
-    
+
     var headers: HTTPHeaders? {
         nil
     }
-    
+
     var parameters: Parameters? {
         nil
     }
-    
+
     var paramsEncoding: ParameterEncoding {
         URLEncoding.default
     }

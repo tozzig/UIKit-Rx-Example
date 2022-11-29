@@ -14,17 +14,19 @@ extension Reactive where Base: NetworkProvider {
     func request<T: Decodable>(request: RequestProtocol) -> Single<T> {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
-        return base.request(request: request).rx.decodable(decoder: decoder)
+        return base.request(request: request).rx
+            .decodable(decoder: decoder)
             .asSingle()
-            .subscribe(on: Scheduler.io)
-            .observe(on: Scheduler.io)
+            .subscribe(on: Scheduler.network)
+            .observe(on: Scheduler.network)
     }
 }
 
-private class Scheduler {
-    static var io: ImmediateSchedulerType = {
+private enum Scheduler {
+    static var network: ImmediateSchedulerType = {
         let operationQueue = OperationQueue()
-        operationQueue.maxConcurrentOperationCount = 4
+        let maxConcurrentOperationCount = 4
+        operationQueue.maxConcurrentOperationCount = maxConcurrentOperationCount
         operationQueue.qualityOfService = .userInitiated
         operationQueue.name = "IO"
         return OperationQueueScheduler(operationQueue: operationQueue)

@@ -39,6 +39,6 @@ class AppCoordinator: BaseCoordinator<Void> {
     }
 
     private func startMoviesListScene(configuration: Configuration) -> Observable<Void> {
-        return coordinate(to: MoviesListCoordinator(window: window, configuration: configuration))
+        coordinate(to: MoviesListCoordinator(window: window, configuration: configuration))
     }
 }

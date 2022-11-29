@@ -5,14 +5,14 @@
 //  Created by onton on 22.11.2022.
 //
 
-import UIKit
 import RxSwift
+import UIKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     private var disposeBag = DisposeBag()
-    
+
     private var appCoordinator: AppCoordinator!
 
     func application(
@@ -22,7 +22,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let window = UIWindow()
         self.window = window
         appCoordinator = AppCoordinator(window: window, configurationService: ConfigurationService())
-        
         goToScene(.moviesList)
         return true
     }
@@ -34,4 +33,3 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             .disposed(by: disposeBag)
     }
 }
-

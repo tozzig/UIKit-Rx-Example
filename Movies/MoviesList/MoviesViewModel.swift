@@ -6,8 +6,8 @@
 //
 
 import RxCocoa
-import RxSwift
 import RxDataSources
+import RxSwift
 
 protocol MoviesViewModelProtocol {
     var input: MoviesViewModelInputProtocol { get }
@@ -28,7 +28,6 @@ protocol MoviesViewModelOutputProtocol {
 }
 
 final class MoviesViewModel: MoviesViewModelProtocol {
-
     let input: MoviesViewModelInputProtocol
     let output: MoviesViewModelOutputProtocol
 
@@ -61,7 +60,7 @@ final class MoviesViewModel: MoviesViewModelProtocol {
 
         let sectionItems = morePages
             .map { items -> [MoviesListCellType] in
-                return items.isEmpty ? [.noResults] : items.map { MoviesListCellType.movie($0) }
+                items.isEmpty ? [.noResults] : items.map { MoviesListCellType.movie($0) }
             }
             .withLatestFrom(currentPage) { ($0, $1) }
             .map { cells, page in
@@ -107,19 +106,6 @@ final class MoviesViewModel: MoviesViewModelProtocol {
             selectedMovieId: selectedMovieId
         )
     }
-
-}
-
-extension MoviesViewModel {
-    func movieCellViewModel(for item: MovieListItem) -> MovieListCellViewModelProtocol {
-        MovieListCellViewModel(movieListItem: item, moviesService: moviesService, imageUrlBuilder: imageUrlBuilder)
-    }
-}
-
-enum MoviesListCellType: Equatable {
-    case movie(MovieListItem)
-    case noResults
-    case loading
 }
 
 extension MoviesViewModel {
@@ -133,6 +119,18 @@ extension MoviesViewModel {
         let sections: Driver<[Section]>
         let selectedMovieId: Observable<Int>
     }
+}
+
+extension MoviesViewModel {
+    func movieCellViewModel(for item: MovieListItem) -> MovieListCellViewModelProtocol {
+        MovieListCellViewModel(movieListItem: item, moviesService: moviesService, imageUrlBuilder: imageUrlBuilder)
+    }
+}
+
+enum MoviesListCellType: Equatable {
+    case movie(MovieListItem)
+    case noResults
+    case loading
 }
 
 struct Section {

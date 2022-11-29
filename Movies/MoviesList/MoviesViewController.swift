@@ -6,15 +6,14 @@
 //
 
 import RxCocoa
-import RxSwift
 import RxDataSources
+import RxSwift
 
 final class MoviesViewController: UIViewController {
-    @IBOutlet private weak var tableView: UITableView!
-
     private let viewModel: MoviesViewModelProtocol
-
     private let disposeBag = DisposeBag()
+
+    @IBOutlet private weak var tableView: UITableView!
 
     init(viewModel: MoviesViewModelProtocol) {
         self.viewModel = viewModel
@@ -24,7 +23,7 @@ final class MoviesViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupBindings()
@@ -41,28 +40,27 @@ private extension MoviesViewController {
     }
 
     func setupBindings() {
-        let eventsDataSource = RxTableViewSectionedReloadDataSource<Section>(
-             configureCell: { [unowned self] _, tableView, indexPath, item in
-                 let cell: UITableViewCell?
-                 switch item {
-                 case .movie(let item):
-                     let movieCell = tableView.dequeueReusableCell(
-                        withIdentifier: R.reuseIdentifier.movieListCell,
-                        for: indexPath
-                     )
-                     movieCell?.updateViewModel(self.viewModel.movieCellViewModel(for: item))
-                     cell = movieCell
-                 case .noResults:
-                     cell = tableView.dequeueReusableCell(
-                        withIdentifier: R.reuseIdentifier.noResultsCell,
-                        for: indexPath
-                     )
-                 case .loading:
-                     cell = tableView.dequeueReusableCell(withIdentifier: R.reuseIdentifier.loadingCell, for: indexPath)
-                 }
-                 return cell ?? UITableViewCell()
+        typealias DataSource = RxTableViewSectionedReloadDataSource<Section>
+        let eventsDataSource = DataSource { [unowned self] _, tableView, indexPath, item in
+            let cell: UITableViewCell?
+            switch item {
+            case .movie(let item):
+                let movieCell = tableView.dequeueReusableCell(
+                    withIdentifier: R.reuseIdentifier.movieListCell,
+                    for: indexPath
+                )
+                movieCell?.updateViewModel(self.viewModel.movieCellViewModel(for: item))
+                cell = movieCell
+            case .noResults:
+                cell = tableView.dequeueReusableCell(
+                    withIdentifier: R.reuseIdentifier.noResultsCell,
+                    for: indexPath
+                )
+            case .loading:
+                cell = tableView.dequeueReusableCell(withIdentifier: R.reuseIdentifier.loadingCell, for: indexPath)
             }
-        )
+            return cell ?? UITableViewCell()
+        }
         disposeBag.insert(
             tableView.rx.modelSelected(MoviesListCellType.self).bind(to: viewModel.input.selectedItem),
             viewModel.output.title.drive(rx.title),
@@ -71,4 +69,3 @@ private extension MoviesViewController {
         )
     }
 }
-

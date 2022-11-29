@@ -30,9 +30,9 @@ class BaseCoordinator<ResultType> {
     ) -> Observable<T> {
         store(coordinator: coordinator)
         return coordinator.start(nextScene: nextScene, params: params, animated: animated)
-            .do(onNext: { [weak self] _ in
+            .do { [weak self] _ in
                 self?.free(coordinator: coordinator)
-            })
+            }
     }
 
     func start(

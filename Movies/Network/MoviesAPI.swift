@@ -8,19 +8,19 @@
 import Alamofire
 
 enum MoviesAPI {
+    case moviesList(Int)
+    case movieDetail(Int)
+
     private var key: String {
         "c9856d0cb57c3f14bf75bdc6c063b8f3"
     }
-
-    case moviesList(Int)
-    case movieDetail(Int)
 }
 
 extension MoviesAPI: RequestProtocol {
     var baseURL: URL {
         URL(string: "https://api.themoviedb.org/3")!
     }
-    
+
     var path: String {
         switch self {
         case .moviesList:

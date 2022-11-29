@@ -46,9 +46,7 @@ final class MovieDetailViewModel: MovieDetailViewModelProtocol {
             title: movieDriver.map(\.?.originalTitle),
             overview: movieDriver.map(\.?.overview),
             releaseYear: releaseYear.asDriver(onErrorJustReturn: nil),
-            errorText: movie.map { _ in nil }.asDriver {
-                .just($0.localizedDescription)
-            }
+            errorText: movie.map { _ in nil }.asDriver { .just($0.localizedDescription) }
         )
     }
 }

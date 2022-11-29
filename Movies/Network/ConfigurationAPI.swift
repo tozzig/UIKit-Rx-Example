@@ -8,11 +8,11 @@
 import Alamofire
 
 enum ConfigurationAPI {
+    case getConfiguration
+
     private var key: String {
         "c9856d0cb57c3f14bf75bdc6c063b8f3"
     }
-
-    case getConfiguration
 }
 
 extension ConfigurationAPI: RequestProtocol {
