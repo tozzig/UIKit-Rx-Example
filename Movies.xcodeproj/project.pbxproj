@@ -19,7 +19,6 @@
 		34373BF8292E2FA200905319 /* NetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34373BF7292E2FA200905319 /* NetworkProvider.swift */; };
 		34373BFA292E341500905319 /* RequestProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34373BF9292E341500905319 /* RequestProtocol.swift */; };
 		34373BFC292E365100905319 /* NetworkProvider+Rx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34373BFB292E365100905319 /* NetworkProvider+Rx.swift */; };
-		34373BFE292E366400905319 /* NetworkResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34373BFD292E366400905319 /* NetworkResponse.swift */; };
 		34373C00292E7EF300905319 /* MovieListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34373BFF292E7EF300905319 /* MovieListItem.swift */; };
 		34373C02292E80CA00905319 /* MoviesAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34373C01292E80CA00905319 /* MoviesAPI.swift */; };
 		34373C04292E83FD00905319 /* MoviesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34373C03292E83FD00905319 /* MoviesService.swift */; };
@@ -62,7 +61,6 @@
 		34373BF7292E2FA200905319 /* NetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkProvider.swift; sourceTree = "<group>"; };
 		34373BF9292E341500905319 /* RequestProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestProtocol.swift; sourceTree = "<group>"; };
 		34373BFB292E365100905319 /* NetworkProvider+Rx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NetworkProvider+Rx.swift"; sourceTree = "<group>"; };
-		34373BFD292E366400905319 /* NetworkResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkResponse.swift; sourceTree = "<group>"; };
 		34373BFF292E7EF300905319 /* MovieListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieListItem.swift; sourceTree = "<group>"; };
 		34373C01292E80CA00905319 /* MoviesAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesAPI.swift; sourceTree = "<group>"; };
 		34373C03292E83FD00905319 /* MoviesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesService.swift; sourceTree = "<group>"; };
@@ -170,7 +168,6 @@
 				34373BF7292E2FA200905319 /* NetworkProvider.swift */,
 				34373BFB292E365100905319 /* NetworkProvider+Rx.swift */,
 				34373BF9292E341500905319 /* RequestProtocol.swift */,
-				34373BFD292E366400905319 /* NetworkResponse.swift */,
 				34373C01292E80CA00905319 /* MoviesAPI.swift */,
 				34373C03292E83FD00905319 /* MoviesService.swift */,
 				34373C05292E89D200905319 /* MoviesListResponse.swift */,
@@ -395,7 +392,6 @@
 				34373BF2292E2C5000905319 /* MoviesListCoordinator.swift in Sources */,
 				344BDD94292FB78000FC8191 /* Configuration.swift in Sources */,
 				34C52C7F2933E80600E772B6 /* ConfigurationAPI.swift in Sources */,
-				34373BFE292E366400905319 /* NetworkResponse.swift in Sources */,
 				34373C0A292EA9C300905319 /* NoResultsCell.swift in Sources */,
 				34373C02292E80CA00905319 /* MoviesAPI.swift in Sources */,
 				34DE1E8C292D6B6B0083A577 /* AppDelegate.swift in Sources */,

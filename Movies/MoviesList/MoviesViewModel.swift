@@ -25,12 +25,10 @@ class MoviesViewModel {
         let loadNextItemTrigger = PublishSubject<Void>()
 
         let initialResponse = moviesService.moviesList()
-            .compactMap(\.value)
 
-        let initialItems = initialResponse.compactMap(\.results)
         let pagesCount = initialResponse.map { $0.totalPages ?? 1 }
 
-        let page = loadNextItemTrigger.withLatestFrom(pagesCount)
+        let currentPage = loadNextItemTrigger.withLatestFrom(pagesCount)
             .scan(1) { pageNumber, pagesCount -> Int? in
                 guard let pageNumber, pagesCount > pageNumber else {
                     return nil
@@ -39,15 +37,15 @@ class MoviesViewModel {
             }
             .startWith(1)
 
-        let morePages = page.compactMap { $0 }
-            .flatMap { moviesService.moviesList(page: $0).compactMap(\.value?.results) }
+        let morePages = currentPage.compactMap { $0 }
+            .flatMap { moviesService.moviesList(page: $0).compactMap(\.results) }
             .scan([], accumulator: +)
 
-        let sectionItems = morePages//Observable.combineLatest(initialItems.startWith([]), morePages) { $0 + $1 }
+        let sectionItems = morePages
             .map { items -> [MoviesListCellType] in
                 return items.isEmpty ? [.noResults] : items.map { MoviesListCellType.movie($0) }
             }
-            .withLatestFrom(page) { ($0, $1) }
+            .withLatestFrom(currentPage) { ($0, $1) }
             .map { cells, page in
                 var sections = [Section(items: cells)]
                 if page != nil {
@@ -55,13 +53,8 @@ class MoviesViewModel {
                 }
                 return sections
             }
-            .asDriverOnErrorJustComplete()
+            .asDriver(onErrorJustReturn: [Section(items: [.noResults])])
 
-        let sections = moviesService.moviesList()
-            .map { response in
-                return [Section(items: response.value?.results?.map { .movie($0) } ?? [.noResults])]
-            }
-            .asDriverOnErrorJustComplete()
         let selectedModelSubject = PublishSubject<MoviesListCellType>()
         let selectedMovieId = selectedModelSubject.compactMap { item -> Int? in
             switch item {

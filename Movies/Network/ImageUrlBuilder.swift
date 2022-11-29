@@ -22,11 +22,11 @@ final class ImageUrlBuilder {
         self.configuration = configuration
 
         let thumbnailImageSize = ImageUrlBuilder.preferredThumbnailSizes.first(where: { preferredSize in
-            return configuration.posterSizes.contains(preferredSize)
+            configuration.posterSizes.contains(preferredSize)
         })
 
         let posterSize = ImageUrlBuilder.preferredPosterSizes.first(where: { preferredSize in
-            return configuration.posterSizes.contains(preferredSize)
+            configuration.posterSizes.contains(preferredSize)
         })
         if let posterSize, let thumbnailImageSize {
             self.posterSize = posterSize

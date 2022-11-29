@@ -25,13 +25,12 @@ final class NetworkProvider {
     private init() { }
     
     func request(request: RequestProtocol) -> DataRequest {
-        session
-            .request(
-                request.baseURL.appendingPathComponent(request.path),
-                method: request.method,
-                parameters: request.parameters,
-                encoding: request.paramsEncoding,
-                headers: request.headers
-            )
+        session.request(
+            request.baseURL.appendingPathComponent(request.path),
+            method: request.method,
+            parameters: request.parameters,
+            encoding: request.paramsEncoding,
+            headers: request.headers
+        )
     }
 }

@@ -18,16 +18,20 @@ class AppCoordinator: BaseCoordinator<Void> {
     }
 
     override func start(nextScene: Scene?, params: [String: Any]?, animated: Bool) -> Observable<Void> {
-        window.rootViewController = LoadingViewController(nib: R.nib.loadingViewController)
+        let loading = LoadingViewController(nib: R.nib.loadingViewController)
+        window.rootViewController = loading
         window.makeKeyAndVisible()
 
         switch nextScene {
         case .moviesList:
             return configurationService.getConfiguration()
-                .compactMap(\.value)
                 .compactMap(Configuration.init(configurationResponse:))
                 .observe(on: MainScheduler.asyncInstance)
                 .flatMap(startMoviesListScene(configuration:))
+                .catch { error in
+                    loading.showError(error.localizedDescription)
+                    return .never()
+                }
         default:
             return .never()
         }

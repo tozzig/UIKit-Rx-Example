@@ -62,7 +62,6 @@ class MoviesViewController: UIViewController {
             tableView.rx.modelSelected(MoviesListCellType.self).bind(to: viewModel.input.selectedItem),
             viewModel.output.title.drive(rx.title),
             viewModel.output.sections.drive(tableView.rx.items(dataSource: eventsDataSource)),
-//            tableView.rx.rea
             tableView.rx.prefetchRows.bind(to: viewModel.input.prefetchRows)
         )
     }
