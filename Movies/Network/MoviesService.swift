@@ -8,11 +8,11 @@
 import RxSwift
 
 class MoviesService {
-    func moviesList(page: Int = 1) -> Observable<MoviesListResponse> {
+    func moviesList(page: Int = 1) -> Single<MoviesListResponse> {
         NetworkProvider.shared.rx.request(request: MoviesAPI.moviesList(page))
     }
 
-    func movieDetails(by id: Int) -> Observable<MovieDetailResponse> {
+    func movieDetails(by id: Int) -> Single<MovieDetailResponse> {
         NetworkProvider.shared.rx.request(request: MoviesAPI.movieDetail(id))
     }
 }

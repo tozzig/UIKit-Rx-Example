@@ -11,10 +11,11 @@ import RxSwift
 extension NetworkProvider: ReactiveCompatible {}
 
 extension Reactive where Base: NetworkProvider {
-    func request<T: Decodable>(request: RequestProtocol) -> Observable<T> {
+    func request<T: Decodable>(request: RequestProtocol) -> Single<T> {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         return base.request(request: request).rx.decodable(decoder: decoder)
+            .asSingle()
             .subscribe(on: Scheduler.io)
             .observe(on: Scheduler.io)
     }

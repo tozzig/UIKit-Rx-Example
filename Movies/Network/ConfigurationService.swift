@@ -8,7 +8,7 @@
 import RxSwift
 
 final class ConfigurationService {
-    func getConfiguration() -> Observable<ConfigurationResponse> {
+    func getConfiguration() -> Single<ConfigurationResponse> {
         return NetworkProvider.shared.rx.request(request: ConfigurationAPI.getConfiguration)
     }
 }

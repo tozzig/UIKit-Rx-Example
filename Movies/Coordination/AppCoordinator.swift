@@ -26,6 +26,7 @@ class AppCoordinator: BaseCoordinator<Void> {
         case .moviesList:
             return configurationService.getConfiguration()
                 .compactMap(Configuration.init(configurationResponse:))
+                .asObservable()
                 .observe(on: MainScheduler.asyncInstance)
                 .flatMap(startMoviesListScene(configuration:))
                 .catch { error in
