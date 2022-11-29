@@ -8,10 +8,24 @@
 import RxCocoa
 import RxSwift
 
-final class MovieDetailViewModel {
-    let output: Output
+protocol MovieDetailViewModelProtocol {
+    var output: MovieDetailViewModelOutputProtocol { get }
+}
 
-    init(id: Int, moviesService: MoviesService, imageUrlBuilder: ImageUrlBuilder) {
+protocol MovieDetailViewModelOutputProtocol {
+    var imageURL: Driver<URL?> { get }
+    var title: Driver<String?> { get }
+    var overview: Driver<String?> { get }
+    var releaseYear: Driver<String?> { get }
+    var errorText: Driver<String?> { get }
+
+    var isErrorVisible: Driver<Bool> { get }
+}
+
+final class MovieDetailViewModel: MovieDetailViewModelProtocol {
+    let output: MovieDetailViewModelOutputProtocol
+
+    init(id: Int, moviesService: MoviesServiceProtocol, imageUrlBuilder: ImageUrlBuilderProtocol) {
         let movie = moviesService.movieDetails(by: id)
 
         let releaseYear = movie.map { movie -> String? in
@@ -40,7 +54,7 @@ final class MovieDetailViewModel {
 }
 
 extension MovieDetailViewModel {
-    struct Output {
+    struct Output: MovieDetailViewModelOutputProtocol {
         let imageURL: Driver<URL?>
         let title: Driver<String?>
         let overview: Driver<String?>

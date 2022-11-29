@@ -11,7 +11,7 @@ import RxSwift
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
-    private var disposeBag: DisposeBag! = DisposeBag()
+    private var disposeBag = DisposeBag()
     
     private var appCoordinator: AppCoordinator!
 

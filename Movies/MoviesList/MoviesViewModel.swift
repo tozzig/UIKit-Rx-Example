@@ -9,17 +9,35 @@ import RxCocoa
 import RxSwift
 import RxDataSources
 
-class MoviesViewModel {
+protocol MoviesViewModelProtocol {
+    var input: MoviesViewModelInputProtocol { get }
+    var output: MoviesViewModelOutputProtocol { get }
 
-    let input: Input
-    let output: Output
+    func movieCellViewModel(for item: MovieListItem) -> MovieListCellViewModelProtocol
+}
+
+protocol MoviesViewModelInputProtocol {
+    var selectedItem: AnyObserver<MoviesListCellType> { get }
+    var prefetchRows: AnyObserver<[IndexPath]> { get }
+}
+
+protocol MoviesViewModelOutputProtocol {
+    var title: Driver<String> { get }
+    var sections: Driver<[Section]> { get }
+    var selectedMovieId: Observable<Int> { get }
+}
+
+final class MoviesViewModel: MoviesViewModelProtocol {
+
+    let input: MoviesViewModelInputProtocol
+    let output: MoviesViewModelOutputProtocol
 
     private let bag = DisposeBag()
 
-    private let moviesService: MoviesService
-    private let imageUrlBuilder: ImageUrlBuilder
+    private let moviesService: MoviesServiceProtocol
+    private let imageUrlBuilder: ImageUrlBuilderProtocol
 
-    init(moviesService: MoviesService, imageUrlBuilder: ImageUrlBuilder) {
+    init(moviesService: MoviesServiceProtocol, imageUrlBuilder: ImageUrlBuilderProtocol) {
         self.moviesService = moviesService
         self.imageUrlBuilder = imageUrlBuilder
         let loadNextItemTrigger = PublishSubject<Void>()
@@ -93,8 +111,8 @@ class MoviesViewModel {
 }
 
 extension MoviesViewModel {
-    func movieCellViewModel(for item: MovieListItem) -> MovieListCellViewModel {
-        .init(movieListItem: item, moviesService: moviesService, imageUrlBuilder: imageUrlBuilder)
+    func movieCellViewModel(for item: MovieListItem) -> MovieListCellViewModelProtocol {
+        MovieListCellViewModel(movieListItem: item, moviesService: moviesService, imageUrlBuilder: imageUrlBuilder)
     }
 }
 
@@ -105,12 +123,12 @@ enum MoviesListCellType: Equatable {
 }
 
 extension MoviesViewModel {
-    struct Input {
+    struct Input: MoviesViewModelInputProtocol {
         let selectedItem: AnyObserver<MoviesListCellType>
         let prefetchRows: AnyObserver<[IndexPath]>
     }
 
-    struct Output {
+    struct Output: MoviesViewModelOutputProtocol {
         let title: Driver<String>
         let sections: Driver<[Section]>
         let selectedMovieId: Observable<Int>

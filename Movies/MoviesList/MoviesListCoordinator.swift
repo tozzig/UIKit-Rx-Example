@@ -47,8 +47,8 @@ class MoviesListCoordinator: BaseCoordinator<Void> {
     private func startMovieDetail(
         in navigationController: UINavigationController,
         movieId: Int,
-        moviesService: MoviesService,
-        imageUrlBuilder: ImageUrlBuilder
+        moviesService: MoviesServiceProtocol,
+        imageUrlBuilder: ImageUrlBuilderProtocol
     ) {
         let movieDetailCoordinator = MovieDetailCoordinator(
             navigationController: navigationController,

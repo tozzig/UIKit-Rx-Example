@@ -7,6 +7,11 @@
 
 import Foundation
 
+protocol ImageUrlBuilderProtocol {
+    func posterUrl(for movie: MovieDetailItem) -> URL?
+    func thumbnailImageURL(for movie: MovieListItem) -> URL?
+}
+
 final class ImageUrlBuilder {
     private static let preferredThumbnailSizes = ["w500", "w780", "original"]
     private static let preferredPosterSizes = ["original", "w780", "w500"]
@@ -35,7 +40,9 @@ final class ImageUrlBuilder {
             return nil
         }
     }
+}
 
+extension ImageUrlBuilder: ImageUrlBuilderProtocol {
     func posterUrl(for movie: MovieDetailItem) -> URL? {
         configuration.baseURL.appendingPathComponent(posterSize + movie.posterPath!)
     }

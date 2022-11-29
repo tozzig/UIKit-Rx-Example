@@ -9,9 +9,9 @@ import RxSwift
 
 class AppCoordinator: BaseCoordinator<Void> {
     private let window: UIWindow
-    private let configurationService: ConfigurationService
+    private let configurationService: ConfigurationServiceProtocol
 
-    init(window: UIWindow, configurationService: ConfigurationService) {
+    init(window: UIWindow, configurationService: ConfigurationServiceProtocol) {
         self.window = window
         self.configurationService = configurationService
         super.init()

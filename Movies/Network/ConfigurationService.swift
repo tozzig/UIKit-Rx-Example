@@ -7,8 +7,12 @@
 
 import RxSwift
 
-final class ConfigurationService {
+protocol ConfigurationServiceProtocol {
+    func getConfiguration() -> Single<ConfigurationResponse>
+}
+
+final class ConfigurationService: ConfigurationServiceProtocol {
     func getConfiguration() -> Single<ConfigurationResponse> {
-        return NetworkProvider.shared.rx.request(request: ConfigurationAPI.getConfiguration)
+        NetworkProvider.shared.rx.request(request: ConfigurationAPI.getConfiguration)
     }
 }

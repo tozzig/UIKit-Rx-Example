@@ -21,7 +21,7 @@ class MovieListCell: UITableViewCell {
         imageView?.image = nil
     }
 
-    func updateViewModel(_ viewModel: MovieListCellViewModel) {
+    func updateViewModel(_ viewModel: MovieListCellViewModelProtocol) {
         disposeBag = DisposeBag()
         disposeBag.insert(
             viewModel.output.releaseYear.drive(releaseYearLabel.rx.text),
@@ -33,10 +33,20 @@ class MovieListCell: UITableViewCell {
     }
 }
 
-final class MovieListCellViewModel {
-    let output: Output
+protocol MovieListCellViewModelProtocol {
+    var output: MovieListCellViewModelOutputProtocol { get }
+}
 
-    init(movieListItem: MovieListItem, moviesService: MoviesService, imageUrlBuilder: ImageUrlBuilder) {
+protocol MovieListCellViewModelOutputProtocol {
+    var imageURL: Driver<URL?> { get }
+    var title: Driver<String> { get }
+    var releaseYear: Driver<String> { get }
+}
+
+final class MovieListCellViewModel: MovieListCellViewModelProtocol {
+    let output: MovieListCellViewModelOutputProtocol
+
+    init(movieListItem: MovieListItem, moviesService: MoviesServiceProtocol, imageUrlBuilder: ImageUrlBuilderProtocol) {
         let formatter = DateFormatter()
         formatter.dateFormat = "YYYY-MM-DD"
         let releaseYear: Driver<String>
@@ -55,7 +65,7 @@ final class MovieListCellViewModel {
 }
 
 extension MovieListCellViewModel {
-    struct Output {
+    struct Output: MovieListCellViewModelOutputProtocol {
         let imageURL: Driver<URL?>
         let title: Driver<String>
         let releaseYear: Driver<String>

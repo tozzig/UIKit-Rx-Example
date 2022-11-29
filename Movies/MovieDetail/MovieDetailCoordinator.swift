@@ -8,17 +8,16 @@
 import RxSwift
 
 class MovieDetailCoordinator: BaseCoordinator<Void> {
-
     private let navigationController: UINavigationController
     private let movieId: Int
-    private let moviesService: MoviesService
-    private let imageUrlBuilder: ImageUrlBuilder
+    private let moviesService: MoviesServiceProtocol
+    private let imageUrlBuilder: ImageUrlBuilderProtocol
 
     init(
         navigationController: UINavigationController,
         movieId: Int,
-        moviesService: MoviesService,
-        imageUrlBuilder: ImageUrlBuilder
+        moviesService: MoviesServiceProtocol,
+        imageUrlBuilder: ImageUrlBuilderProtocol
     ) {
         self.navigationController = navigationController
         self.movieId = movieId

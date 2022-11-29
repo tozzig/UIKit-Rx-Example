@@ -5,7 +5,6 @@
 //  Created by onton on 23.11.2022.
 //
 
-import Foundation
 import Alamofire
 
 protocol RequestProtocol: URLConvertible {

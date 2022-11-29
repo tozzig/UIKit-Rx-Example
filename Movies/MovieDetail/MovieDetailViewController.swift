@@ -9,7 +9,6 @@ import RxCocoa
 import RxSwift
 
 final class MovieDetailViewController: UIViewController {
-
     @IBOutlet private weak var scrollView: UIScrollView!
     @IBOutlet private weak var releaseYearLabel: UILabel!
     @IBOutlet private weak var titleLabel: UILabel!
@@ -17,11 +16,10 @@ final class MovieDetailViewController: UIViewController {
     @IBOutlet private weak var overviewLabel: UILabel!
     @IBOutlet private weak var errorLabel: UILabel!
 
-    private let viewModel: MovieDetailViewModel
-
+    private let viewModel: MovieDetailViewModelProtocol
     private let disposeBag = DisposeBag()
 
-    init(viewModel: MovieDetailViewModel) {
+    init(viewModel: MovieDetailViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -32,10 +30,12 @@ final class MovieDetailViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        bindObservables()
+        setupBindings()
     }
+}
 
-    func bindObservables() {
+private extension MovieDetailViewController {
+    func setupBindings() {
         disposeBag.insert(
             viewModel.output.isErrorVisible.drive(scrollView.rx.isHidden),
             viewModel.output.releaseYear.drive(releaseYearLabel.rx.text),

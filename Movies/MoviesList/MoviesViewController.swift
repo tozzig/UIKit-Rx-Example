@@ -9,15 +9,14 @@ import RxCocoa
 import RxSwift
 import RxDataSources
 
-class MoviesViewController: UIViewController {
-
+final class MoviesViewController: UIViewController {
     @IBOutlet private weak var tableView: UITableView!
 
-    private let viewModel: MoviesViewModel
+    private let viewModel: MoviesViewModelProtocol
 
     private let disposeBag = DisposeBag()
 
-    init(viewModel: MoviesViewModel) {
+    init(viewModel: MoviesViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -28,14 +27,20 @@ class MoviesViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupBindings()
+        setupTableView()
+    }
+}
+
+private extension MoviesViewController {
+    func setupTableView() {
         tableView.register(R.nib.movieListCell)
         tableView.register(R.nib.noResultsCell)
         tableView.register(R.nib.loadingCell)
         tableView.tableFooterView = UIView()
-        setupBindings()
     }
 
-    private func setupBindings() {
+    func setupBindings() {
         let eventsDataSource = RxTableViewSectionedReloadDataSource<Section>(
              configureCell: { [unowned self] _, tableView, indexPath, item in
                  let cell: UITableViewCell?

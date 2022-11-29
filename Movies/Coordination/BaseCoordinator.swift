@@ -8,7 +8,6 @@
 import RxSwift
 
 class BaseCoordinator<ResultType> {
-
     typealias CoordinationResult = ResultType
 
     let disposeBag = DisposeBag()
