@@ -23,12 +23,14 @@ final class MovieListCell: UITableViewCell {
 
     func updateViewModel(_ viewModel: MovieListCellViewModelProtocol) {
         disposeBag = DisposeBag()
-        disposeBag.insert(
-            viewModel.output.releaseYear.drive(releaseYearLabel.rx.text),
-            viewModel.output.title.drive(movieTitleLabel.rx.text),
-            viewModel.output.imageURL.drive { [unowned self] url in
-                posterImageView.kf.setImage(with: url)
+        releaseYearLabel.text = viewModel.releaseYear
+
+        movieTitleLabel.text = viewModel.title
+
+        viewModel.imageURL
+            .drive { [weak self] url in
+                self?.posterImageView.kf.setImage(with: url)
             }
-        )
+            .disposed(by: disposeBag)
     }
 }

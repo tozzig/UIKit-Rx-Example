@@ -7,5 +7,4 @@
 
 import UIKit
 
-class LoadingCell: UITableViewCell {
-}
+final class LoadingCell: UITableViewCell {}

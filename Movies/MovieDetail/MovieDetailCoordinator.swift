@@ -5,35 +5,29 @@
 //  Created by onton on 25.11.2022.
 //
 
+import RxCocoa
 import RxSwift
 
-class MovieDetailCoordinator: BaseCoordinator<Void> {
+final class MovieDetailCoordinator: BaseCoordinator<Void> {
     private let navigationController: UINavigationController
     private let movieId: Int
-    private let moviesService: MoviesServiceProtocol
-    private let imageUrlBuilder: ImageUrlBuilderProtocol
+    private let dependenciesProvider: DependenciesProvider
 
     init(
         navigationController: UINavigationController,
         movieId: Int,
-        moviesService: MoviesServiceProtocol,
-        imageUrlBuilder: ImageUrlBuilderProtocol
+        dependenciesProvider: DependenciesProvider
     ) {
         self.navigationController = navigationController
         self.movieId = movieId
-        self.moviesService = moviesService
-        self.imageUrlBuilder = imageUrlBuilder
+        self.dependenciesProvider = dependenciesProvider
     }
 
-    override func start(nextScene: Scene?, params: [String: Any]?, animated: Bool) -> Observable<Void> {
-        let viewModel = MovieDetailViewModel(
-            id: movieId,
-            moviesService: moviesService,
-            imageUrlBuilder: imageUrlBuilder
-        )
+    override func start(nextScene: Scene?, animated: Bool) -> Driver<Void> {
+        let viewModel = MovieDetailViewModel(id: movieId, dependencies: dependenciesProvider)
         let view = MovieDetailViewController(viewModel: viewModel)
         navigationController.pushViewController(view, animated: animated)
 
-        return view.rx.deallocated
+        return view.rx.deallocated.asDriverOnErrorJustComplete()
     }
 }

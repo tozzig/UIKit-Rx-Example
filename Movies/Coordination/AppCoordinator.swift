@@ -5,40 +5,32 @@
 //  Created by onton on 23.11.2022.
 //
 
+import RxCocoa
 import RxSwift
 
-class AppCoordinator: BaseCoordinator<Void> {
+final class AppCoordinator: BaseCoordinator<Void> {
     private let window: UIWindow
-    private let configurationService: ConfigurationServiceProtocol
+    private let dependenciesProvider: DependenciesProvider
 
-    init(window: UIWindow, configurationService: ConfigurationServiceProtocol) {
+    init(window: UIWindow, dependenciesProvider: DependenciesProvider) {
         self.window = window
-        self.configurationService = configurationService
+        self.dependenciesProvider = dependenciesProvider
         super.init()
     }
 
-    override func start(nextScene: Scene?, params: [String: Any]?, animated: Bool) -> Observable<Void> {
-        let loading = LoadingViewController(nib: R.nib.loadingViewController)
-        window.rootViewController = loading
+    override func start(nextScene: Scene?, animated: Bool) -> Driver<Void> {
+        window.rootViewController = UIViewController()
         window.makeKeyAndVisible()
 
         switch nextScene {
         case .moviesList:
-            return configurationService.getConfiguration()
-                .compactMap(Configuration.init(configurationResponse:))
-                .asObservable()
-                .observe(on: MainScheduler.asyncInstance)
-                .flatMap(startMoviesListScene(configuration:))
-                .catch { error in
-                    loading.showError(error.localizedDescription)
-                    return .never()
-                }
+            return startMoviesListScene(dependenciesProvider: dependenciesProvider)
         default:
             return .never()
         }
     }
 
-    private func startMoviesListScene(configuration: Configuration) -> Observable<Void> {
-        coordinate(to: MoviesListCoordinator(window: window, configuration: configuration))
+    private func startMoviesListScene(dependenciesProvider: DependenciesProvider) -> Driver<Void> {
+        coordinate(to: MoviesListCoordinator(window: window, dependenciesProvider: dependenciesProvider))
     }
 }

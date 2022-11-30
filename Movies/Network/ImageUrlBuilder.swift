@@ -12,17 +12,36 @@ protocol ImageUrlBuilderProtocol {
     func thumbnailImageURL(for movie: MovieListItem) -> URL?
 }
 
+private enum Constants {
+    static let missingPosterSizers = "Configuration is missing poster sizes"
+    static let wrongPosterSizers = "Configuration has wrong poster sizes"
+}
+
 final class ImageUrlBuilder {
+    enum ImageUrlError: String, LocalizedError {
+        case missingPosterSizers
+        case wrongPosterSizers
+
+        var errorDescription: String? {
+            switch self {
+            case .missingPosterSizers:
+                return Constants.missingPosterSizers
+            case .wrongPosterSizers:
+                return Constants.wrongPosterSizers
+            }
+        }
+    }
+
     private static let preferredThumbnailSizes = ["w500", "w780", "original"]
     private static let preferredPosterSizes = ["original", "w780", "w500"]
 
-    private let configuration: Configuration
+    private let configuration: ConfigurationProtocol
     private let posterSize: String
     private let thumbnailImageSize: String
 
-    init?(configuration: Configuration) {
+    init(configuration: ConfigurationProtocol) throws {
         guard !configuration.posterSizes.isEmpty else {
-            return nil
+            throw ImageUrlError.missingPosterSizers
         }
         self.configuration = configuration
 
@@ -37,7 +56,7 @@ final class ImageUrlBuilder {
             self.posterSize = posterSize
             self.thumbnailImageSize = thumbnailImageSize
         } else {
-            return nil
+            throw ImageUrlError.wrongPosterSizers
         }
     }
 }

@@ -8,14 +8,12 @@
 import RxCocoa
 import RxSwift
 
-protocol MovieDetailViewModelProtocol {
-    var output: MovieDetailViewModelOutputProtocol { get }
-}
+typealias MovieDetailViewModelDependencies = MoviesServiceProvider & ImageUrlBuilderProvider
 
-protocol MovieDetailViewModelOutputProtocol {
+protocol MovieDetailViewModelProtocol {
     var imageURL: Driver<URL?> { get }
-    var title: Driver<String?> { get }
-    var overview: Driver<String?> { get }
+    var title: Driver<String> { get }
+    var overview: Driver<String> { get }
     var releaseYear: Driver<String?> { get }
     var errorText: Driver<String?> { get }
 
@@ -23,44 +21,38 @@ protocol MovieDetailViewModelOutputProtocol {
 }
 
 final class MovieDetailViewModel: MovieDetailViewModelProtocol {
-    let output: MovieDetailViewModelOutputProtocol
+    let imageURL: Driver<URL?>
+    let title: Driver<String>
+    let overview: Driver<String>
+    let releaseYear: Driver<String?>
+    let errorText: Driver<String?>
 
-    init(id: Int, moviesService: MoviesServiceProtocol, imageUrlBuilder: ImageUrlBuilderProtocol) {
-        let movie = moviesService.movieDetails(by: id)
+    var isErrorVisible: Driver<Bool> {
+        errorText.map { $0 != nil }
+    }
 
-        let releaseYear = movie.map { movie -> String? in
-            let formatter = DateFormatter()
-            formatter.dateFormat = "YYYY-MM-DD"
-            if let date = formatter.date(from: movie.releaseDate) {
-                formatter.dateFormat = "YYYY"
-                return formatter.string(from: date)
-            } else {
-                return nil
-            }
-        }
-        let movieDriver = movie.map(Optional.init)
+    init(id: Int, dependencies: MovieDetailViewModelDependencies) {
+        let movie = dependencies.moviesService.flatMap { $0.movieDetails(by: id) }
+
+        imageURL = movie.asObservable()
+            .withLatestFrom(dependencies.imageUrlBuilder.asObservable()) { ($0, $1) }
+            .map { $1.posterUrl(for: $0) }
             .asDriver(onErrorJustReturn: nil)
 
-        output = Output(
-            imageURL: movieDriver.compactMap { $0 }.map(imageUrlBuilder.posterUrl(for:)),
-            title: movieDriver.map(\.?.originalTitle),
-            overview: movieDriver.map(\.?.overview),
-            releaseYear: releaseYear.asDriver(onErrorJustReturn: nil),
-            errorText: movie.map { _ in nil }.asDriver { .just($0.localizedDescription) }
-        )
-    }
-}
+        title = movie
+            .map(\.originalTitle)
+            .asDriverOnErrorJustComplete()
 
-extension MovieDetailViewModel {
-    struct Output: MovieDetailViewModelOutputProtocol {
-        let imageURL: Driver<URL?>
-        let title: Driver<String?>
-        let overview: Driver<String?>
-        let releaseYear: Driver<String?>
-        let errorText: Driver<String?>
+        overview = movie
+            .map(\.overview)
+            .asDriverOnErrorJustComplete()
 
-        var isErrorVisible: Driver<Bool> {
-            errorText.map { $0 != nil }
-        }
+        releaseYear = movie.map(\.releaseDate)
+            .map(DateFormatters.convertStringFromFullDateToYears)
+            .asDriver(onErrorJustReturn: nil)
+
+        errorText = movie
+            .map { _ in nil }
+            .asDriver { .just($0.localizedDescription) }
     }
 }

@@ -130,12 +130,10 @@ struct R: Rswift.Validatable {
     fileprivate init() {}
   }
 
-  /// This `R.nib` struct is generated, and contains static references to 6 nibs.
+  /// This `R.nib` struct is generated, and contains static references to 5 nibs.
   struct nib {
     /// Nib `LoadingCell`.
     static let loadingCell = _R.nib._LoadingCell()
-    /// Nib `LoadingViewController`.
-    static let loadingViewController = _R.nib._LoadingViewController()
     /// Nib `MovieDetailViewController`.
     static let movieDetailViewController = _R.nib._MovieDetailViewController()
     /// Nib `MovieListCell`.
@@ -150,14 +148,6 @@ struct R: Rswift.Validatable {
     @available(*, deprecated, message: "Use UINib(resource: R.nib.loadingCell) instead")
     static func loadingCell(_: Void = ()) -> UIKit.UINib {
       return UIKit.UINib(resource: R.nib.loadingCell)
-    }
-    #endif
-
-    #if os(iOS) || os(tvOS)
-    /// `UINib(name: "LoadingViewController", in: bundle)`
-    @available(*, deprecated, message: "Use UINib(resource: R.nib.loadingViewController) instead")
-    static func loadingViewController(_: Void = ()) -> UIKit.UINib {
-      return UIKit.UINib(resource: R.nib.loadingViewController)
     }
     #endif
 
@@ -195,10 +185,6 @@ struct R: Rswift.Validatable {
 
     static func loadingCell(owner ownerOrNil: AnyObject?, options optionsOrNil: [UINib.OptionsKey : Any]? = nil) -> LoadingCell? {
       return R.nib.loadingCell.instantiate(withOwner: ownerOrNil, options: optionsOrNil)[0] as? LoadingCell
-    }
-
-    static func loadingViewController(owner ownerOrNil: AnyObject?, options optionsOrNil: [UINib.OptionsKey : Any]? = nil) -> UIKit.UIView? {
-      return R.nib.loadingViewController.instantiate(withOwner: ownerOrNil, options: optionsOrNil)[0] as? UIKit.UIView
     }
 
     static func movieDetailViewController(owner ownerOrNil: AnyObject?, options optionsOrNil: [UINib.OptionsKey : Any]? = nil) -> UIKit.UIView? {
@@ -263,17 +249,6 @@ struct _R: Rswift.Validatable {
 
       func firstView(owner ownerOrNil: AnyObject?, options optionsOrNil: [UINib.OptionsKey : Any]? = nil) -> LoadingCell? {
         return instantiate(withOwner: ownerOrNil, options: optionsOrNil)[0] as? LoadingCell
-      }
-
-      fileprivate init() {}
-    }
-
-    struct _LoadingViewController: Rswift.NibResourceType {
-      let bundle = R.hostingBundle
-      let name = "LoadingViewController"
-
-      func firstView(owner ownerOrNil: AnyObject?, options optionsOrNil: [UINib.OptionsKey : Any]? = nil) -> UIKit.UIView? {
-        return instantiate(withOwner: ownerOrNil, options: optionsOrNil)[0] as? UIKit.UIView
       }
 
       fileprivate init() {}

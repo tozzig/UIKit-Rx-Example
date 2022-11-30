@@ -14,6 +14,7 @@ final class MoviesViewController: UIViewController {
     private let disposeBag = DisposeBag()
 
     @IBOutlet private weak var tableView: UITableView!
+    @IBOutlet private weak var errorLabel: UILabel!
 
     init(viewModel: MoviesViewModelProtocol) {
         self.viewModel = viewModel
@@ -40,8 +41,13 @@ private extension MoviesViewController {
     }
 
     func setupBindings() {
-        typealias DataSource = RxTableViewSectionedReloadDataSource<Section>
-        let eventsDataSource = DataSource { [unowned self] _, tableView, indexPath, item in
+        title = viewModel.title
+
+        typealias DataSource = RxTableViewSectionedReloadDataSource<MoviesSection>
+        let eventsDataSource = DataSource { [weak self] _, tableView, indexPath, item in
+            guard let self else {
+                return UITableViewCell()
+            }
             let cell: UITableViewCell?
             switch item {
             case .movie(let item):
@@ -61,11 +67,32 @@ private extension MoviesViewController {
             }
             return cell ?? UITableViewCell()
         }
-        disposeBag.insert(
-            tableView.rx.modelSelected(MoviesListCellType.self).bind(to: viewModel.input.selectedItem),
-            viewModel.output.title.drive(rx.title),
-            viewModel.output.sections.drive(tableView.rx.items(dataSource: eventsDataSource)),
-            tableView.rx.prefetchRows.bind(to: viewModel.input.prefetchRows)
-        )
+
+        tableView.rx.modelSelected(MoviesListCellType.self)
+            .bind(to: viewModel.selectedItem)
+            .disposed(by: disposeBag)
+
+        viewModel.sections
+            .compactMap { $0 }
+            .drive(tableView.rx.items(dataSource: eventsDataSource))
+            .disposed(by: disposeBag)
+
+        viewModel.sections
+            .map { $0 == nil }
+            .drive(tableView.rx.isHidden)
+            .disposed(by: disposeBag)
+
+        tableView.rx.prefetchRows
+            .bind(to: viewModel.prefetchRows)
+            .disposed(by: disposeBag)
+
+        viewModel.error
+            .drive(errorLabel.rx.text)
+            .disposed(by: disposeBag)
+
+        viewModel.error
+            .map { $0 == nil }
+            .drive(errorLabel.rx.isHidden)
+            .disposed(by: disposeBag)
     }
 }

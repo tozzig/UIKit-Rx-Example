@@ -36,17 +36,39 @@ final class MovieDetailViewController: UIViewController {
 
 private extension MovieDetailViewController {
     func setupBindings() {
-        disposeBag.insert(
-            viewModel.output.isErrorVisible.drive(scrollView.rx.isHidden),
-            viewModel.output.releaseYear.drive(releaseYearLabel.rx.text),
-            viewModel.output.overview.drive(overviewLabel.rx.text),
-            viewModel.output.title.drive(rx.title),
-            viewModel.output.title.drive(titleLabel.rx.text),
-            viewModel.output.imageURL.drive { [unowned self] url in
-                posterImageView.kf.setImage(with: url)
-            },
-            viewModel.output.errorText.drive(errorLabel.rx.text),
-            viewModel.output.isErrorVisible.map(!).drive(errorLabel.rx.isHidden)
-        )
+        viewModel.isErrorVisible
+            .drive(scrollView.rx.isHidden)
+            .disposed(by: disposeBag)
+
+        viewModel.releaseYear
+            .drive(releaseYearLabel.rx.text)
+            .disposed(by: disposeBag)
+
+        viewModel.overview
+            .drive(overviewLabel.rx.text)
+            .disposed(by: disposeBag)
+
+        viewModel.title
+            .drive(rx.title)
+            .disposed(by: disposeBag)
+
+        viewModel.title
+            .drive(titleLabel.rx.text)
+            .disposed(by: disposeBag)
+
+        viewModel.imageURL
+            .drive { [weak self] url in
+                self?.posterImageView.kf.setImage(with: url)
+            }
+            .disposed(by: disposeBag)
+
+        viewModel.errorText
+            .drive(errorLabel.rx.text)
+            .disposed(by: disposeBag)
+
+        viewModel.isErrorVisible
+            .map(!)
+            .drive(errorLabel.rx.isHidden)
+            .disposed(by: disposeBag)
     }
 }

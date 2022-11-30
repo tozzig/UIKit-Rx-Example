@@ -5,11 +5,10 @@
 //  Created by onton on 23.11.2022.
 //
 
+import RxCocoa
 import RxSwift
 
 class BaseCoordinator<ResultType> {
-    typealias CoordinationResult = ResultType
-
     let disposeBag = DisposeBag()
     private let identifier = UUID()
     private var childCoordinators = [UUID: Any]()
@@ -25,21 +24,16 @@ class BaseCoordinator<ResultType> {
     func coordinate<T>(
         to coordinator: BaseCoordinator<T>,
         nextScene: Scene? = nil,
-        params: [String: Any]? = nil,
         animated: Bool = true
-    ) -> Observable<T> {
+    ) -> Driver<T> {
         store(coordinator: coordinator)
-        return coordinator.start(nextScene: nextScene, params: params, animated: animated)
+        return coordinator.start(nextScene: nextScene, animated: animated)
             .do { [weak self] _ in
                 self?.free(coordinator: coordinator)
             }
     }
 
-    func start(
-        nextScene: Scene? = nil,
-        params: [String: Any]? = nil,
-        animated: Bool = true
-    ) -> Observable<ResultType> {
+    func start(nextScene: Scene? = nil, animated: Bool = true) -> Driver<ResultType> {
         fatalError("Start method should be implemented.")
     }
 }

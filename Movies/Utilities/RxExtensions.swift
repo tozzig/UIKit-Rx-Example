@@ -13,3 +13,9 @@ extension ObservableType {
         asDriver { _ in .empty() }
     }
 }
+
+extension Single {
+    func asDriverOnErrorJustComplete() -> Driver<Element> {
+        asObservable().asDriverOnErrorJustComplete()
+    }
+}

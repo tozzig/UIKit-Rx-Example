@@ -12,7 +12,13 @@ protocol ConfigurationServiceProtocol {
 }
 
 final class ConfigurationService: ConfigurationServiceProtocol {
+    private let networkProvider: NetworkProviderProtocol
+
+    init(networkProvider: NetworkProviderProtocol) {
+        self.networkProvider = networkProvider
+    }
+
     func getConfiguration() -> Single<ConfigurationResponse> {
-        NetworkProvider.shared.rx.request(request: ConfigurationAPI.getConfiguration)
+        networkProvider.request(request: ConfigurationAPI.getConfiguration)
     }
 }

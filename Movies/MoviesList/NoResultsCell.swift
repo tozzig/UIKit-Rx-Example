@@ -7,7 +7,7 @@
 
 import UIKit
 
-class NoResultsCell: UITableViewCell {
+final class NoResultsCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         textLabel?.text = "No results"

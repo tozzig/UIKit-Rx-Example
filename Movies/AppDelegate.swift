@@ -15,21 +15,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     private var appCoordinator: AppCoordinator!
 
+    private let dependencies = DependencyContainer()
+
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         let window = UIWindow()
         self.window = window
-        appCoordinator = AppCoordinator(window: window, configurationService: ConfigurationService())
+        appCoordinator = AppCoordinator(window: window, dependenciesProvider: dependencies)
         goToScene(.moviesList)
         return true
     }
 
-    func goToScene(_ scene: Scene, params: [String: AnyObject]? = nil) {
+    func goToScene(_ scene: Scene) {
         disposeBag = DisposeBag()
-        appCoordinator.start(nextScene: .moviesList, params: params, animated: false)
-            .subscribe()
+        appCoordinator.start(nextScene: .moviesList, animated: false)
+            .drive()
             .disposed(by: disposeBag)
     }
 }

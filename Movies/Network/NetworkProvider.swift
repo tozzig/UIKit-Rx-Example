@@ -6,10 +6,14 @@
 //
 
 import Alamofire
+import RxAlamofire
+import RxSwift
 
-final class NetworkProvider {
-    static let shared = NetworkProvider()
+protocol NetworkProviderProtocol {
+    func request<T: Decodable>(request: RequestProtocol) -> Single<T>
+}
 
+final class NetworkProvider: NetworkProviderProtocol {
     private let requestTimeout: TimeInterval = 60
 
     private(set) lazy var session: Session = {
@@ -18,15 +22,30 @@ final class NetworkProvider {
         return Session(configuration: .default)
     }()
 
-    private init() { }
-
-    func request(request: RequestProtocol) -> DataRequest {
-        session.request(
+    func request<T: Decodable>(request: RequestProtocol) -> Single<T> {
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        let dataRequest = session.request(
             request.baseURL.appendingPathComponent(request.path),
             method: request.method,
             parameters: request.parameters,
             encoding: request.paramsEncoding,
             headers: request.headers
         )
+        return dataRequest.rx.decodable(decoder: decoder)
+            .asSingle()
+            .subscribe(on: Scheduler.network)
+            .observe(on: Scheduler.network)
     }
+}
+
+private enum Scheduler {
+    static var network: ImmediateSchedulerType = {
+        let operationQueue = OperationQueue()
+        let maxConcurrentOperationCount = 4
+        operationQueue.maxConcurrentOperationCount = maxConcurrentOperationCount
+        operationQueue.qualityOfService = .userInitiated
+        operationQueue.name = "IO"
+        return OperationQueueScheduler(operationQueue: operationQueue)
+    }()
 }

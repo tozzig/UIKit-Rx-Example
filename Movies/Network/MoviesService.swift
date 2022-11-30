@@ -9,16 +9,22 @@ import RxSwift
 
 protocol MoviesServiceProtocol {
     func moviesList(page: Int) -> Single<MoviesListResponse>
-    func movieDetails(by id: Int) -> Single<MovieDetailResponse>
+    func movieDetails(by id: Int) -> Single<MovieDetailItem>
 }
 
 final class MoviesService: MoviesServiceProtocol {
-    func moviesList(page: Int) -> Single<MoviesListResponse> {
-        NetworkProvider.shared.rx.request(request: MoviesAPI.moviesList(page))
+    private let networkProvider: NetworkProviderProtocol
+
+    init(networkProvider: NetworkProviderProtocol) {
+        self.networkProvider = networkProvider
     }
 
-    func movieDetails(by id: Int) -> Single<MovieDetailResponse> {
-        NetworkProvider.shared.rx.request(request: MoviesAPI.movieDetail(id))
+    func moviesList(page: Int) -> Single<MoviesListResponse> {
+        networkProvider.request(request: MoviesAPI.moviesList(page))
+    }
+
+    func movieDetails(by id: Int) -> Single<MovieDetailItem> {
+        networkProvider.request(request: MoviesAPI.movieDetail(id))
     }
 }
 

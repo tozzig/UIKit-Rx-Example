@@ -9,82 +9,79 @@ import RxCocoa
 import RxDataSources
 import RxSwift
 
+typealias MoviesViewModelDependencies = ImageUrlBuilderProvider & MoviesServiceProvider
+
+private enum Constants {
+    static let movies = "Movies"
+    static let defaultPagesCount = 1
+    static let startingPageNumber = 1
+}
+
 protocol MoviesViewModelProtocol {
-    var input: MoviesViewModelInputProtocol { get }
-    var output: MoviesViewModelOutputProtocol { get }
+    var title: String { get }
+    var sections: Driver<[MoviesSection]?> { get }
+    var error: Driver<String?> { get }
+    var selectedMovieId: Observable<Int> { get }
+
+    var selectedItem: AnyObserver<MoviesListCellType> { get }
+    var prefetchRows: AnyObserver<[IndexPath]> { get }
 
     func movieCellViewModel(for item: MovieListItem) -> MovieListCellViewModelProtocol
 }
 
-protocol MoviesViewModelInputProtocol {
-    var selectedItem: AnyObserver<MoviesListCellType> { get }
-    var prefetchRows: AnyObserver<[IndexPath]> { get }
-}
-
-protocol MoviesViewModelOutputProtocol {
-    var title: Driver<String> { get }
-    var sections: Driver<[Section]> { get }
-    var selectedMovieId: Observable<Int> { get }
-}
-
 final class MoviesViewModel: MoviesViewModelProtocol {
-    let input: MoviesViewModelInputProtocol
-    let output: MoviesViewModelOutputProtocol
+    let title = Constants.movies
+    let sections: Driver<[MoviesSection]?>
+    let error: Driver<String?>
+    let selectedMovieId: Observable<Int>
+    let selectedItem: AnyObserver<MoviesListCellType>
+    let prefetchRows: AnyObserver<[IndexPath]>
 
-    private let bag = DisposeBag()
+    private let dependencies: MoviesViewModelDependencies
+    private let disposeBag = DisposeBag()
 
-    private let moviesService: MoviesServiceProtocol
-    private let imageUrlBuilder: ImageUrlBuilderProtocol
+    init(dependencies: MoviesViewModelDependencies) {
+        self.dependencies = dependencies
 
-    init(moviesService: MoviesServiceProtocol, imageUrlBuilder: ImageUrlBuilderProtocol) {
-        self.moviesService = moviesService
-        self.imageUrlBuilder = imageUrlBuilder
         let loadNextItemTrigger = PublishSubject<Void>()
 
-        let initialResponse = moviesService.moviesList()
+        let initialResponse = dependencies.moviesService.flatMap { $0.moviesList() }
 
-        let pagesCount = initialResponse.map { $0.totalPages ?? 1 }
+        let pagesCount = initialResponse.map { $0.totalPages ?? Constants.defaultPagesCount }
 
         let currentPage = loadNextItemTrigger.withLatestFrom(pagesCount)
-            .scan(1) { pageNumber, pagesCount -> Int? in
+            .scan(Constants.startingPageNumber) { pageNumber, pagesCount -> Int? in
                 guard let pageNumber, pagesCount > pageNumber else {
                     return nil
                 }
                 return pageNumber + 1
             }
-            .startWith(1)
+            .startWith(Constants.startingPageNumber)
 
         let morePages = currentPage.compactMap { $0 }
-            .flatMap { moviesService.moviesList(page: $0).compactMap(\.results) }
+            .flatMap { page in
+                dependencies.moviesService.flatMap { $0.moviesList(page: page) }
+            }
+            .compactMap(\.results)
             .scan([], accumulator: +)
 
         let sectionItems = morePages
             .map { items -> [MoviesListCellType] in
-                items.isEmpty ? [.noResults] : items.map { MoviesListCellType.movie($0) }
+                items.isEmpty ? [.noResults] : items.map { .movie($0) }
             }
             .withLatestFrom(currentPage) { ($0, $1) }
             .map { cells, page in
-                var sections = [Section(items: cells)]
+                var sections = [MoviesSection(items: cells)]
                 if page != nil {
-                    sections.append(Section(items: [.loading]))
+                    sections.append(MoviesSection(items: [.loading]))
                 }
                 return sections
             }
-            .asDriver(onErrorJustReturn: [Section(items: [.noResults])])
 
         let selectedModelSubject = PublishSubject<MoviesListCellType>()
-        let selectedMovieId = selectedModelSubject.compactMap { item -> Int? in
-            switch item {
-            case .noResults, .loading:
-                return nil
-            case .movie(let movie):
-                return movie.id
-            }
-        }
+        let prefetchRowsSubject = PublishSubject<[IndexPath]>()
 
-        let prefetchRows = PublishSubject<[IndexPath]>()
-
-        prefetchRows
+        prefetchRowsSubject
             .withLatestFrom(sectionItems) { ($0, $1) }
             .filter { indexPaths, sections in
                 guard let lastSectionIndex = sections.lastIndex(where: { $0.items.contains(.loading) }) else {
@@ -94,54 +91,30 @@ final class MoviesViewModel: MoviesViewModelProtocol {
             }
             .map { _ in () }
             .bind(to: loadNextItemTrigger)
-            .disposed(by: bag)
+            .disposed(by: disposeBag)
 
-        input = Input(
-            selectedItem: selectedModelSubject.asObserver(),
-            prefetchRows: prefetchRows.asObserver()
-        )
-        output = Output(
-            title: .just("Movies"),
-            sections: sectionItems,
-            selectedMovieId: selectedMovieId
-        )
-    }
-}
+        sections = sectionItems
+            .map(Optional.init)
+            .asDriver(onErrorJustReturn: nil)
+        error = sectionItems
+            .map { _ in nil }
+            .asDriver { .just($0.localizedDescription) }
+        selectedMovieId = selectedModelSubject.compactMap { item -> Int? in
+            switch item {
+            case .noResults, .loading:
+                return nil
+            case .movie(let movie):
+                return movie.id
+            }
+        }
 
-extension MoviesViewModel {
-    struct Input: MoviesViewModelInputProtocol {
-        let selectedItem: AnyObserver<MoviesListCellType>
-        let prefetchRows: AnyObserver<[IndexPath]>
-    }
-
-    struct Output: MoviesViewModelOutputProtocol {
-        let title: Driver<String>
-        let sections: Driver<[Section]>
-        let selectedMovieId: Observable<Int>
+        selectedItem = selectedModelSubject.asObserver()
+        prefetchRows = prefetchRowsSubject.asObserver()
     }
 }
 
 extension MoviesViewModel {
     func movieCellViewModel(for item: MovieListItem) -> MovieListCellViewModelProtocol {
-        MovieListCellViewModel(movieListItem: item, moviesService: moviesService, imageUrlBuilder: imageUrlBuilder)
-    }
-}
-
-enum MoviesListCellType: Equatable {
-    case movie(MovieListItem)
-    case noResults
-    case loading
-}
-
-struct Section {
-    var items: [Item]
-}
-
-extension Section: SectionModelType {
-    typealias Item = MoviesListCellType
-
-    init(original: Section, items: [Item]) {
-        self = original
-        self.items = items
+        MovieListCellViewModel(movieListItem: item, dependencies: dependencies)
     }
 }
