@@ -12,6 +12,5 @@ target 'Movies' do
   pod 'R.swift'
   pod 'RxDataSources'
   pod 'Kingfisher', '~> 7.0'
-  pod 'SwiftLint'
   
 end

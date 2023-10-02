@@ -212,13 +212,21 @@
 				34373BF6292E2F9400905319 /* Network */,
 				34373BF3292E2F0F00905319 /* Utilities */,
 				34373BEA292E2B2000905319 /* Coordination */,
-				34373BE9292E298300905319 /* MovieDetail */,
-				34373BE8292E297400905319 /* MoviesList */,
+				34E6429B29421FD600903285 /* User Stories */,
 				34DE1E94292D6B6C0083A577 /* Assets.xcassets */,
 				34DE1E96292D6B6C0083A577 /* LaunchScreen.storyboard */,
 				34DE1E99292D6B6C0083A577 /* Info.plist */,
 			);
 			path = Movies;
+			sourceTree = "<group>";
+		};
+		34E6429B29421FD600903285 /* User Stories */ = {
+			isa = PBXGroup;
+			children = (
+				34373BE9292E298300905319 /* MovieDetail */,
+				34373BE8292E297400905319 /* MoviesList */,
+			);
+			path = "User Stories";
 			sourceTree = "<group>";
 		};
 		4CB886555B9438FBF37A8FB6 /* Pods */ = {
@@ -239,7 +247,6 @@
 			buildPhases = (
 				9EBCB443D6BF22A04F96C8C5 /* [CP] Check Pods Manifest.lock */,
 				34373BE5292E203500905319 /* R.Swift */,
-				34F4E5612936897D0098E5C7 /* ShellScript */,
 				34DE1E84292D6B6B0083A577 /* Sources */,
 				34DE1E85292D6B6B0083A577 /* Frameworks */,
 				34DE1E86292D6B6B0083A577 /* Resources */,
@@ -324,23 +331,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"$PODS_ROOT/R.swift/rswift\" generate \"$SRCROOT/R.generated.swift\"\n";
-		};
-		34F4E5612936897D0098E5C7 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/SwiftLint/swiftlint\"\n";
 		};
 		3D1C652A73EA73E7E67A4ED5 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
